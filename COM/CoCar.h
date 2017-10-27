@@ -30,31 +30,31 @@ public:
 	STDMETHODIMP SetPetName(BSTR petName);
 	STDMETHODIMP SetMaxSpeed(int maxSp);
 
-	//STDMETHODIMP GetIDsOfNames(
-	//	[in]                   REFIID   riid,
-	//	[in, size_is(cNames)]  LPOLESTR *rgszNames,
-	//	[in]                   UINT     cNames,
-	//	[in]                   LCID     lcid,
-	//	[out, size_is(cNames)] DISPID   *rgDispId
-	//);
-	//STDMETHODIMP GetTypeInfo(
-	//	[in]  UINT      iTInfo,
-	//	[in]  LCID      lcid,
-	//	[out] ITypeInfo **ppTInfo
-	//);
-	//STDMETHODIMP GetTypeInfoCount(
-	//	[out] UINT *pctinfo
-	//);
-	//STDMETHODIMP Invoke(
-	//	[in]      DISPID     dispIdMember,
-	//	[in]      REFIID     riid,
-	//	[in]      LCID       lcid,
-	//	[in]      WORD       wFlags,
-	//	[in, out] DISPPARAMS *pDispParams,
-	//	[out]     VARIANT    *pVarResult,
-	//	[out]     EXCEPINFO  *pExcepInfo,
-	//	[out]     UINT       *puArgErr
-	//);
+	STDMETHODIMP GetIDsOfNames(
+		REFIID   riid,
+		LPOLESTR *rgszNames,
+        UINT     cNames,
+		LCID     lcid,
+		DISPID   *rgDispId
+	);
+	STDMETHODIMP GetTypeInfo(
+		 UINT      iTInfo,
+		 LCID      lcid,
+		 ITypeInfo **ppTInfo
+	);
+	STDMETHODIMP GetTypeInfoCount(
+		UINT *pctinfo
+	);
+	STDMETHODIMP Invoke(
+		DISPID     dispIdMember,
+		REFIID     riid,
+	    LCID       lcid,
+		WORD       wFlags,
+		DISPPARAMS *pDispParams,
+		VARIANT    *pVarResult,
+		EXCEPINFO  *pExcepInfo,
+		UINT       *puArgErr
+	);
 private:
 	unsigned long m_refCount;
 };

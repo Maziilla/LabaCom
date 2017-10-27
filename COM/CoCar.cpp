@@ -52,7 +52,13 @@ STDMETHODIMP CoCar::QueryInterface(REFIID riid, void** pIFace)
 		MessageBox(NULL, L"Handed out ICreateCar", L"QI", MB_OK |
 			MB_SETFOREGROUND);
 	}
-	else
+	else if(riid == IID_IDispatch)
+	{
+	*pIFace = (IDispatch*)this;
+	MessageBox(NULL, L"Handed out IDispatch", L"QI", MB_OK |
+		MB_SETFOREGROUND);
+	}
+	else	
 	{
 		*pIFace = NULL;
 		return E_NOINTERFACE;
@@ -132,8 +138,7 @@ STDMETHODIMP CoCar::GetPetName(BSTR* petName)
 const INT MAX_NAME_LENGTH = 32;
 
 // Информация о СоСаr помещается в блоки сообщений
-STDMETHODIMP CoCar::DisplayStats()
-{
+STDMETHODIMP CoCar::DisplayStats() {
 	// Need to transfer a BSTR to a char array.
 	char buff[MAX_NAME_LENGTH];
 	WideCharToMultiByte(CP_ACP, NULL, m_petName, -1, buff,
@@ -151,14 +156,39 @@ STDMETHODIMP CoCar::DisplayStats()
 	memset(wtext, 0, sizeof(wtext));
 	return S_OK;
 }
-//
-//STDMETHODIMP
-//CoCar::GetIDsOfNames(
-//	REFIID riid,
-//	OLECHAR ** rgszNames,
-//	UINT cNames,
-//	LCID lcid,
-//	DISPID * rgDispId)
-//{
-//	return DispGetIDsOfNames(m_ptinfo, rgszNames, cNames, rgDispId);
-//};
+
+STDMETHODIMP CoCar::GetIDsOfNames(
+	REFIID riid,
+	OLECHAR ** rgszNames,
+	UINT cNames,
+	LCID lcid,
+	DISPID * rgDispId)
+{
+	return DispGetIDsOfNames(m_ptinfo, rgszNames, cNames, rgDispId);
+};
+STDMETHODIMP CoCar::GetTypeInfo(
+	UINT iTInfo,
+	LCID lcid,
+	ITypeInfo FAR* FAR* ppTInfo)
+{
+	if (ppTInfo == NULL)
+		return E_INVALIDARG;
+	*ppTInfo = NULL;
+
+	if (iTInfo != 0)
+		return DISP_E_BADINDEX;
+
+	m_ptinfo->AddRef();      // AddRef and return pointer to cached
+							 // typeinfo for this object.
+	*ppTInfo = m_ptinfo;
+
+	return NOERROR;
+}
+STDMETHODIMP CoCar::GetTypeInfoCount(UINT * pctinfo)
+{
+	if (pctinfo == NULL) {
+		return E_INVALIDARG;
+	}
+	*pctinfo = 1;
+	return NOERROR;
+}

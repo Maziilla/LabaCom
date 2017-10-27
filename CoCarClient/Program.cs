@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,15 @@ namespace CoCarClient
 
     class Program
     {
+        [ComVisible(true)]
+        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("97747077-659A-43ED-BB74-9C125151BE8D")]
+        public interface IDispatch
+        {
+            int GetTypeInfoCount();
+            [return: MarshalAs(UnmanagedType.Interface)]
+            ITypeInfo GetTypeInfo([In, MarshalAs(UnmanagedType.U4)] int iTInfo, [In, MarshalAs(UnmanagedType.U4)] int lcid);
+            void GetIDsOfNames([In] ref Guid riid, [In, MarshalAs(UnmanagedType.LPArray)] string[] rgszNames, [In, MarshalAs(UnmanagedType.U4)] int cNames, [In, MarshalAs(UnmanagedType.U4)] int lcid, [Out, MarshalAs(UnmanagedType.LPArray)] int[] rgDispId);
+        }
         [ComVisible(true)]
         [ComImport, Guid("ECD55377-DFEF-4C48-BAD8-BB9D00C53295")]
         public class Car
@@ -43,7 +53,8 @@ namespace CoCarClient
             ICreateCar iCrCar = (ICreateCar)myCar;
             Console.WriteLine("Напишите имя: ");
             iCrCar.SetPetName(Console.ReadLine());
-
+            IDispatch disp = (IDispatch)myCar;
+            Console.WriteLine(disp.GetTypeInfoCount());
         }
     }
 }
