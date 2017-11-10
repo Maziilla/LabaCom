@@ -5,7 +5,7 @@
 #include "iid.h"
 #include <iostream>
 
-class CoCar : public IEngine, public ICreateCar, public IStats
+class CoCar : public IEngine, public ICreateCar, public IStats, public IDispatch
 {
 public:
 	CoCar();
@@ -30,31 +30,10 @@ public:
 	STDMETHODIMP SetPetName(BSTR petName);
 	STDMETHODIMP SetMaxSpeed(int maxSp);
 
-	STDMETHODIMP GetIDsOfNames(
-		REFIID   riid,
-		LPOLESTR *rgszNames,
-        UINT     cNames,
-		LCID     lcid,
-		DISPID   *rgDispId
-	);
-	STDMETHODIMP GetTypeInfo(
-		 UINT      iTInfo,
-		 LCID      lcid,
-		 ITypeInfo **ppTInfo
-	);
-	STDMETHODIMP GetTypeInfoCount(
-		UINT *pctinfo
-	);
-	STDMETHODIMP Invoke(
-		DISPID     dispIdMember,
-		REFIID     riid,
-	    LCID       lcid,
-		WORD       wFlags,
-		DISPPARAMS *pDispParams,
-		VARIANT    *pVarResult,
-		EXCEPINFO  *pExcepInfo,
-		UINT       *puArgErr
-	);
+	STDMETHODIMP GetIDsOfNames(REFIID riid, OLECHAR  ** rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId);
+	STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo);
+	STDMETHODIMP GetTypeInfoCount(UINT * pctinfo);
+	STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr);
 private:
 	unsigned long m_refCount;
 };

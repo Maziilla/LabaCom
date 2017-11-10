@@ -6,6 +6,8 @@
 #include <iostream>
 #include "CoCar.h"
 
+LPOLESTR methods[7] = { L"SpeedUp",L"GetMaxSpeed",L"GetCurSpeed",L"SetPetName",L"SetMaxSpeed", L"DisplayStats",L"GetPetName" };
+
 STDMETHODIMP_(DWORD) CoCar::AddRef()
 {
 	++m_refCount;
@@ -157,20 +159,82 @@ STDMETHODIMP CoCar::DisplayStats() {
 	return S_OK;
 }
 
-STDMETHODIMP CoCar::GetIDsOfNames(
-	REFIID riid,
-	OLECHAR ** rgszNames,
-	UINT cNames,
-	LCID lcid,
-	DISPID * rgDispId)
+STDMETHODIMP CoCar::GetIDsOfNames(REFIID riid, OLECHAR  **rgszNames, UINT cNames, LCID lcid, DISPID *rgDispId)
 {
-	return DispGetIDsOfNames(m_ptinfo, rgszNames, cNames, rgDispId);
-};
-STDMETHODIMP CoCar::GetTypeInfo(
-	UINT iTInfo,
-	LCID lcid,
-	ITypeInfo FAR* FAR* ppTInfo)
+	//(NULL, L"", L"Names", MB_OK | MB_SETFOREGROUND);
+	HRESULT hr = S_OK;
+	for (UINT i = 0; i < cNames; i++)
+	{
+		for (UINT j = 0; j < 7; j++)
+		{
+			if (wcscmp(methods[j], rgszNames[i]) == 0)
+			{
+				*rgDispId = j;
+				return S_OK;
+			}
+		}
+	}
+	return DISP_E_UNKNOWNNAME;
+
+}
+
+STDMETHODIMP CoCar::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *Params, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
+	//MessageBox(NULL, L"", L"Invoke", MB_OK | MB_SETFOREGROUND);
+	VARIANTARG arg;
+	VariantInit(&arg);
+	VariantInit(pVarResult);
+	HRESULT hr = S_OK;
+	int speed;
+	switch (dispIdMember)
+	{
+	case 0:
+		SpeedUp();
+		break;
+	case 1:
+		speed = 0;
+		//hr = DispGetParam(Params, 0, VT_INT, &arg, puArgErr);
+		//if (hr != NOERROR) return hr;
+		GetMaxSpeed(&speed);
+		V_VT(pVarResult) = VT_INT;
+		V_INT(pVarResult) = speed;
+		break;
+	case 2:
+		speed = 0;
+		GetCurSpeed(&speed);
+		V_VT(pVarResult) = VT_INT;
+		V_INT(pVarResult) = speed;
+		break;
+	case 3:
+		hr = DispGetParam(Params, 0, VT_BSTR, &arg, puArgErr);
+		if (hr != NOERROR) return hr;
+		SetPetName(V_BSTR(&arg));
+		break;
+	case 4:
+		hr = DispGetParam(Params, 0, VT_INT, &arg, puArgErr);
+		if (hr != NOERROR) return hr;
+		SetMaxSpeed(V_INT(&arg));
+		break;
+	case 5:
+		DisplayStats();
+		break;
+	case 6:
+		hr = DispGetParam(Params, 0, VT_BSTR, &arg, puArgErr);
+		if (hr != NOERROR) return hr;
+		GetPetName(V_BSTRREF(&arg));
+		V_VT(pVarResult) = VT_BSTR;
+		V_BSTR(pVarResult) = V_BSTR(&arg);
+		break;
+	default:
+		return DISP_E_UNKNOWNNAME;
+		break;
+	}
+	return NOERROR;
+}
+
+STDMETHODIMP CoCar::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo FAR* FAR* ppTInfo)
+{
+	//MessageBox(NULL, L"", L"info", MB_OK | MB_SETFOREGROUND);
 	if (ppTInfo == NULL)
 		return E_INVALIDARG;
 	*ppTInfo = NULL;
@@ -184,8 +248,10 @@ STDMETHODIMP CoCar::GetTypeInfo(
 
 	return NOERROR;
 }
+
 STDMETHODIMP CoCar::GetTypeInfoCount(UINT * pctinfo)
 {
+	//MessageBox(NULL, L"", L"count", MB_OK | MB_SETFOREGROUND);
 	if (pctinfo == NULL) {
 		return E_INVALIDARG;
 	}
