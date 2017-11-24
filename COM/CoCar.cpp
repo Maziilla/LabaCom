@@ -183,6 +183,7 @@ STDMETHODIMP CoCar::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 	//MessageBox(NULL, L"", L"Invoke", MB_OK | MB_SETFOREGROUND);
 	VARIANTARG arg;
 	VariantInit(&arg);
+	BSTR* name=new BSTR;
 	VariantInit(pVarResult);
 	HRESULT hr = S_OK;
 	int speed;
@@ -221,9 +222,10 @@ STDMETHODIMP CoCar::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFl
 	case 6:
 		hr = DispGetParam(Params, 0, VT_BSTR, &arg, puArgErr);
 		if (hr != NOERROR) return hr;
-		GetPetName(V_BSTRREF(&arg));
+		//GetPetName(V_BSTRREF(&arg));
+		GetPetName(name);
 		V_VT(pVarResult) = VT_BSTR;
-		V_BSTR(pVarResult) = V_BSTR(&arg);
+		V_BSTR(pVarResult) = *name;
 		break;
 	default:
 		return DISP_E_UNKNOWNNAME;

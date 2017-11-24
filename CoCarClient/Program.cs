@@ -43,48 +43,71 @@ namespace CoCarClient
         int GetTypeInfo([In, MarshalAs(UnmanagedType.U4)] UInt32 iTInfo, [In, MarshalAs(UnmanagedType.U4)] UInt32 lcid, ref ITypeInfo typeInfo);
         int GetIDsOfNames([In] ref Guid riid, [In, MarshalAs(UnmanagedType.LPArray)] string[] rgszNames,
             [In, MarshalAs(UnmanagedType.U4)] int cNames, [In, MarshalAs(UnmanagedType.U4)] int lcid, [Out, MarshalAs(UnmanagedType.LPArray)] int[] rgDispId);
-        int Invoke([In, MarshalAs(UnmanagedType.U4)] int dispIdMember, [In] ref Guid riid, [In, MarshalAs(UnmanagedType.U4)] int lcid, [In, MarshalAs(UnmanagedType.U2)] short wFlags,
-            System.Runtime.InteropServices.ComTypes.DISPPARAMS Params, dynamic /* */ pVarResult,
-            [Out] System.Runtime.InteropServices.ComTypes.EXCEPINFO pExcepInfo, [Out, MarshalAs(UnmanagedType.U4)] int puArgErr);
+        int Invoke([In, MarshalAs(UnmanagedType.U4)] int dispIdMember, [In] ref Guid riid, [In, MarshalAs(UnmanagedType.U4)] int lcid, System.Runtime.InteropServices.ComTypes.INVOKEKIND wFlags,
+            ref System.Runtime.InteropServices.ComTypes.DISPPARAMS Params, out object pVarResult,
+            IntPtr pExcepInfo, IntPtr puArgErr);
     };
     class Program
     {        
         [STAThread]
         static void Main(string[] args)
         {
-            dynamic kek=null;
+            object Res = 1;
             int a=0;
             Car myCar = new Car();
-            Type type = typeof(Car);
+            //Type type = typeof(Car);
             ICreateCar iCrCar = (ICreateCar)myCar;
+            IStats iStCar = (IStats)myCar;
             //Console.WriteLine("Напишите имя: ");
             //iCrCar.SetPetName(Console.ReadLine());
             //IStats iStCar = (IStats)myCar;
             //string st = "";
             //iStCar.GetPetName(ref st);
             //Console.WriteLine(st);
+            iCrCar.SetPetName("Lolipop");
+            iCrCar.SetMaxSpeed(67);
             IDispatch disp = (IDispatch)myCar;
+            iStCar.DisplayStats();
             disp.GetTypeInfoCount(out a);
+            
             Console.WriteLine( a.ToString());            
 
             int[] t = new int[1];
             Guid guid = new Guid();
             disp.GetIDsOfNames(ref guid, new string[] { "GetMaxSpeed" }, 1, 1, t);
-            Console.WriteLine(t[0].ToString());
+            Console.WriteLine("Max speed "+t[0].ToString());
 
-            
-            System.Runtime.InteropServices.ComTypes.DISPPARAMS par = new System.Runtime.InteropServices.ComTypes.DISPPARAMS();
-            int res = 1;
-            System.Runtime.InteropServices.ComTypes.EXCEPINFO info = new System.Runtime.InteropServices.ComTypes.EXCEPINFO();
-            //iDpCar.Invoke(t[0], guid, 1, 0, par, res, info, 0);
-            int speed = 0;
-            //type.InvokeMember("", BindingFlags.DeclaredOnly |
-            //    BindingFlags.Public | BindingFlags.NonPublic |
-            //    BindingFlags.Instance | BindingFlags.SetProperty, null, myCar, new object[] { a });
-            //myCar.GetType().InvokeMember("Invoke", BindingFlags.DeclaredOnly |
-            //    BindingFlags.Public | BindingFlags.NonPublic |
-            //    BindingFlags.Instance | BindingFlags.SetProperty, null, myCar, new object[] { t[0], guid, 1, 0, par, kek, info, 0 });
-            Console.WriteLine(speed.ToString());
+            var arg = 51;
+            var pVariant = Marshal.AllocCoTaskMem(16);
+            Marshal.GetNativeVariantForObject(arg, pVariant);
+            System.Runtime.InteropServices.ComTypes.DISPPARAMS par = new System.Runtime.InteropServices.ComTypes.DISPPARAMS()
+            {
+                cArgs = 1,
+                cNamedArgs = 0,
+                rgdispidNamedArgs = IntPtr.Zero,
+                rgvarg = pVariant
+            };
+            System.Runtime.InteropServices.ComTypes.INVOKEKIND flags = new System.Runtime.InteropServices.ComTypes.INVOKEKIND();
+            IntPtr info = new IntPtr();
+            IntPtr puArgErr = new IntPtr();
+            disp.Invoke(4, guid, 1, flags, par, out Res, info, puArgErr);
+            disp.Invoke(1, guid, 1, flags, par, out Res, info, puArgErr);
+            Console.WriteLine("Res = " + Res.ToString());
+
+            var arg_6 = "";
+            Marshal.GetNativeVariantForObject(arg_6, pVariant);
+            System.Runtime.InteropServices.ComTypes.DISPPARAMS par_6 = new System.Runtime.InteropServices.ComTypes.DISPPARAMS()
+            {
+                cArgs = 1,
+                cNamedArgs = 0,
+                rgdispidNamedArgs = IntPtr.Zero,
+                rgvarg = pVariant
+            };
+            System.Runtime.InteropServices.ComTypes.INVOKEKIND flags_6 = new System.Runtime.InteropServices.ComTypes.INVOKEKIND();
+            disp.Invoke(6, guid, 1, flags_6, par_6, out Res, info, puArgErr);
+
+
+            Console.WriteLine("Res = "+Res.ToString());
             Console.ReadKey();
         }
     }
